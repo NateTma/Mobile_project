@@ -8,6 +8,8 @@ import '../services/snackbar_service.dart';
 import '../services/navigation_service.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _LoginPageState();
@@ -47,9 +49,9 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginPageUI() {
     return Builder(
-      builder: (BuildContext _context) {
-        SnackBarService.instance.buildContext = _context;
-        _auth = Provider.of<AuthProvider>(_context);
+      builder: (BuildContext context) {
+        SnackBarService.instance.buildContext = context;
+        _auth = Provider.of<AuthProvider>(context);
         return Container(
           height: _deviceHeight * 0.60,
           padding: EdgeInsets.symmetric(horizontal: _deviceWidth * 0.10),
@@ -71,9 +73,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _headingWidget() {
-    return Container(
+    return SizedBox(
       height: _deviceHeight * 0.12,
-      child: Column(
+      child: const Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _inputForm() {
-    return Container(
+    return SizedBox(
       height: _deviceHeight * 0.16,
       child: Form(
         key: _formKey,
@@ -115,19 +117,19 @@ class _LoginPageState extends State<LoginPage> {
   Widget _emailTextField() {
     return TextFormField(
       autocorrect: false,
-      style: TextStyle(color: Colors.white),
-      validator: (_input) {
-        return (_input?.isNotEmpty == true && _input!.contains("@"))
+      style: const TextStyle(color: Colors.white),
+      validator: (input) {
+        return (input?.isNotEmpty == true && input!.contains("@"))
             ? null
             : "Please enter a valid email";
       },
-      onSaved: (_input) {
+      onSaved: (input) {
         setState(() {
-          _email = _input ?? '';
+          _email = input ?? '';
         });
       },
       cursorColor: Colors.white,
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         hintText: "Email Address",
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.white),
@@ -140,17 +142,17 @@ class _LoginPageState extends State<LoginPage> {
     return TextFormField(
       autocorrect: false,
       obscureText: true,
-      style: TextStyle(color: Colors.white),
-      validator: (_input) {
-        return _input?.isNotEmpty == true ? null : "Please enter a password";
+      style: const TextStyle(color: Colors.white),
+      validator: (input) {
+        return input?.isNotEmpty == true ? null : "Please enter a password";
       },
-      onSaved: (_input) {
+      onSaved: (input) {
         setState(() {
-          _password = _input ?? '';
+          _password = input ?? '';
         });
       },
       cursorColor: Colors.white,
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         hintText: "Password",
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.white),
@@ -161,11 +163,11 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _loginButton() {
     return _auth.status == AuthStatus.Authenticating
-        ? Align(
+        ? const Align(
             alignment: Alignment.center,
             child: CircularProgressIndicator(),
           )
-        : Container(
+        : SizedBox(
             height: _deviceHeight * 0.06,
             width: _deviceWidth,
             child: MaterialButton(
@@ -175,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                 }
               },
               color: Colors.blue,
-              child: Text(
+              child: const Text(
                 "LOGIN",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
@@ -188,10 +190,10 @@ class _LoginPageState extends State<LoginPage> {
       onTap: () {
         NavigationService.instance.navigateTo("register");
       },
-      child: Container(
+      child: SizedBox(
         height: _deviceHeight * 0.06,
         width: _deviceWidth,
-        child: Text(
+        child: const Text(
           "REGISTER",
           textAlign: TextAlign.center,
           style: TextStyle(

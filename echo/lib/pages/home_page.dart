@@ -76,6 +76,7 @@ class _HomePageState extends State<HomePage>
     );
   }
 }*/
+library;
 
 import 'package:flutter/material.dart';
 
@@ -84,6 +85,8 @@ import './recent_conversations_page.dart';
 import './search_page.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _HomePageState();
@@ -116,13 +119,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Text("Chatify"),
+        title: const Text("Chatify"),
         bottom: TabBar(
           unselectedLabelColor: Colors.grey,
           indicatorColor: Colors.blue,
           labelColor: Colors.blue,
           controller: _tabController,
-          tabs: [
+          tabs: const [
             Tab(
               icon: Icon(
                 Icons.people_outline,

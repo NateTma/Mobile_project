@@ -189,6 +189,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 }
 */
+library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -205,7 +206,7 @@ class SearchPage extends StatefulWidget {
   final double height;
   final double width;
 
-  SearchPage(this.height, this.width);
+  const SearchPage(this.height, this.width, {super.key});
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -235,8 +236,8 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _searchPageUI() {
     return Builder(
-      builder: (BuildContext _context) {
-        _auth = Provider.of<AuthProvider>(_context);
+      builder: (BuildContext context) {
+        _auth = Provider.of<AuthProvider>(context);
         return Column(
           mainAxisAlignment: MainAxisAlignment.start,
           mainAxisSize: MainAxisSize.max,
@@ -257,13 +258,13 @@ class _SearchPageState extends State<SearchPage> {
       padding: EdgeInsets.symmetric(vertical: widget.height * 0.02),
       child: TextField(
         autocorrect: false,
-        style: TextStyle(color: Colors.white),
-        onSubmitted: (_input) {
+        style: const TextStyle(color: Colors.white),
+        onSubmitted: (input) {
           setState(() {
-            _searchText = _input;
+            _searchText = input;
           });
         },
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           prefixIcon: Icon(
             Icons.search,
             color: Colors.white,
@@ -279,45 +280,45 @@ class _SearchPageState extends State<SearchPage> {
   Widget _usersListView() {
     return StreamBuilder<List<Contact>>(
       stream: DBService.instance.getUsersInDB(_searchText),
-      builder: (_context, _snapshot) {
-        var _usersData = _snapshot.data;
-        if (_usersData != null) {
-          _usersData.removeWhere((_contact) => _contact.id == _auth.user!.uid);
+      builder: (context, snapshot) {
+        var usersData = snapshot.data;
+        if (usersData != null) {
+          usersData.removeWhere((contact) => contact.id == _auth.user!.uid);
         }
-        return _snapshot.hasData
-            ? Container(
+        return snapshot.hasData
+            ? SizedBox(
                 height: widget.height * 0.75,
                 child: ListView.builder(
-                  itemCount: _usersData?.length ?? 0,
-                  itemBuilder: (BuildContext _context, int _index) {
-                    var _userData = _usersData?[_index];
-                    var _currentTime = DateTime.now();
-                    var _recepientID = _userData?.id;
-                    var _isUserActive = _userData != null &&
-                        _userData.lastseen != null &&
-                        !_userData.lastseen!.toDate().isBefore(
-                              _currentTime.subtract(
-                                Duration(hours: 1),
+                  itemCount: usersData?.length ?? 0,
+                  itemBuilder: (BuildContext context, int index) {
+                    var userData = usersData?[index];
+                    var currentTime = DateTime.now();
+                    var recepientID = userData?.id;
+                    var isUserActive = userData != null &&
+                        userData.lastseen != null &&
+                        !userData.lastseen!.toDate().isBefore(
+                              currentTime.subtract(
+                                const Duration(hours: 1),
                               ),
                             );
                     return ListTile(
                       onTap: () {
-                        if (_recepientID != null) {
+                        if (recepientID != null) {
                           DBService.instance.createOrGetConversation(
-                              _auth.user!.uid, _recepientID,
-                              (String _conversationID) {
+                              _auth.user!.uid, recepientID,
+                              (String conversationID) {
                             NavigationService.instance.navigateToRoute(
-                              MaterialPageRoute(builder: (_context) {
-                                return ConversationPage(_conversationID,
-                                    _recepientID,
-                                    _userData?.name ?? "",
-                                    _userData?.image ?? "");
+                              MaterialPageRoute(builder: (context) {
+                                return ConversationPage(conversationID,
+                                    recepientID,
+                                    userData?.name ?? "",
+                                    userData?.image ?? "");
                               }),
                             );
                           });
                         }
                       },
-                      title: Text(_userData?.name ?? ''),
+                      title: Text(userData?.name ?? ''),
                       leading: Container(
                         width: 50,
                         height: 50,
@@ -325,7 +326,7 @@ class _SearchPageState extends State<SearchPage> {
                           borderRadius: BorderRadius.circular(100),
                           image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: NetworkImage(_userData?.image ?? ""),
+                            image: NetworkImage(userData?.image ?? ""),
                           ),
                         ),
                       ),
@@ -334,16 +335,16 @@ class _SearchPageState extends State<SearchPage> {
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
-                          _isUserActive
-                              ? Text(
+                          isUserActive
+                              ? const Text(
                                   "Active Now",
                                   style: TextStyle(fontSize: 15),
                                 )
-                              : Text(
+                              : const Text(
                                   "Last Seen",
                                   style: TextStyle(fontSize: 15),
                                 ),
-                          _isUserActive
+                          isUserActive
                               ? Container(
                                   height: 10,
                                   width: 10,
@@ -353,12 +354,12 @@ class _SearchPageState extends State<SearchPage> {
                                   ),
                                 )
                               : Text(
-                                  _userData != null && _userData.lastseen != null
+                                  userData != null && userData.lastseen != null
                                       ? timeago.format(
-                                          _userData.lastseen!.toDate(),
+                                          userData.lastseen!.toDate(),
                                         )
                                       : "",
-                                  style: TextStyle(fontSize: 15),
+                                  style: const TextStyle(fontSize: 15),
                                 ),
                         ],
                       ),
@@ -366,7 +367,7 @@ class _SearchPageState extends State<SearchPage> {
                   },
                 ),
               )
-            : SpinKitWanderingCubes(
+            : const SpinKitWanderingCubes(
                 color: Colors.blue,
                 size: 50.0,
               );

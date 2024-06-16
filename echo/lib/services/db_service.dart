@@ -131,6 +131,7 @@ class DBService {
     );
   }
 }*/
+library;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/contact.dart';
@@ -233,7 +234,7 @@ class DBService {
     var ref = _db
         .collection(_userCollection)
         .where("name", isGreaterThanOrEqualTo: searchName)
-        .where("name", isLessThan: searchName + 'z');
+        .where("name", isLessThan: '${searchName}z');
     return ref.snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
         return Contact.fromFirestore(doc);

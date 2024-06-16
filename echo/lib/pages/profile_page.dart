@@ -15,7 +15,7 @@ class ProfilePage extends StatelessWidget {
 
   late final AuthProvider _auth; //_auth needs to be marked as late
 
-  ProfilePage(this._height, this._width);
+  ProfilePage(this._height, this._width, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +35,9 @@ class ProfilePage extends StatelessWidget {
       builder: (BuildContext context) {
         _auth = Provider.of<AuthProvider>(context);
         return StreamBuilder<Contact>(
-          stream: _auth.user != null? DBService.instance.getUserData(_auth.user!.uid): Stream.empty(),
+          stream: _auth.user != null? DBService.instance.getUserData(_auth.user!.uid): const Stream.empty(),
           builder: (context, snapshot) {
-            var _userData = snapshot.data;
+            var userData = snapshot.data;
             return snapshot.hasData
                 ? Align(
                     alignment: Alignment.center,
@@ -48,15 +48,15 @@ class ProfilePage extends StatelessWidget {
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          _userImageWidget(_userData!.image),
-                          _userNameWidget(_userData.name),
-                          _userEmailWidget(_userData.email),
+                          _userImageWidget(userData!.image),
+                          _userNameWidget(userData.name),
+                          _userEmailWidget(userData.email),
                           _logoutButton(),
                         ],
                       ),
                     ),
                   )
-                : SpinKitWanderingCubes(
+                : const SpinKitWanderingCubes(
                     color: Colors.blue,
                     size: 50.0,
                   );
@@ -66,47 +66,47 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _userImageWidget(String _image) {
-    double _imageRadius = _height * 0.20;
+  Widget _userImageWidget(String image) {
+    double imageRadius = _height * 0.20;
     return Container(
-      height: _imageRadius,
-      width: _imageRadius,
+      height: imageRadius,
+      width: imageRadius,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(_imageRadius),
+        borderRadius: BorderRadius.circular(imageRadius),
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: NetworkImage(_image),
+          image: NetworkImage(image),
         ),
       ),
     );
   }
 
-  Widget _userNameWidget(String _userName) {
-    return Container(
+  Widget _userNameWidget(String userName) {
+    return SizedBox(
       height: _height * 0.05,
       width: _width,
       child: Text(
-        _userName,
+        userName,
         textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.white, fontSize: 30),
+        style: const TextStyle(color: Colors.white, fontSize: 30),
       ),
     );
   }
 
-  Widget _userEmailWidget(String _email) {
-    return Container(
+  Widget _userEmailWidget(String email) {
+    return SizedBox(
       height: _height * 0.03,
       width: _width,
       child: Text(
-        _email,
+        email,
         textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.white24, fontSize: 15),
+        style: const TextStyle(color: Colors.white24, fontSize: 15),
       ),
     );
   }
 
   Widget _logoutButton() {
-    return Container(
+    return SizedBox(
       height: _height * 0.06,
       width: _width * 0.80,
       child: MaterialButton(
@@ -114,7 +114,7 @@ class ProfilePage extends StatelessWidget {
           await AuthProvider.instance.logoutUser(() async {});
         },
         color: Colors.red,
-        child: Text(
+        child: const Text(
           "LOGOUT",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         ),

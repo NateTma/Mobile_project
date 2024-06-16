@@ -260,6 +260,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 }*/
+library;
 
 import 'dart:io';
 
@@ -274,6 +275,8 @@ import '../services/db_service.dart';
 import '../services/snackbar_service.dart';
 
 class RegistrationPage extends StatefulWidget {
+  const RegistrationPage({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _RegistrationPageState();
@@ -311,9 +314,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   Widget registrationPageUI() {
     return Builder(
-      builder: (BuildContext _context) {
-        SnackBarService.instance.buildContext = _context;
-        _auth = Provider.of<AuthProvider>(_context);
+      builder: (BuildContext context) {
+        SnackBarService.instance.buildContext = context;
+        _auth = Provider.of<AuthProvider>(context);
         return Container(
           height: _deviceHeight * 0.75,
           padding: EdgeInsets.symmetric(horizontal: _deviceWidth * 0.10),
@@ -334,9 +337,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   Widget _headingWidget() {
-    return Container(
+    return SizedBox(
       height: _deviceHeight * 0.12,
-      child: Column(
+      child: const Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -354,7 +357,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   Widget _inputForm() {
-    return Container(
+    return SizedBox(
       height: _deviceHeight * 0.35,
       child: Form(
         key: _formKey,
@@ -381,9 +384,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
       alignment: Alignment.center,
       child: GestureDetector(
         onTap: () async {
-          File? _imageFile = await MediaService.instance.getImageFromLibrary();
+          File? imageFile = await MediaService.instance.getImageFromLibrary();
           setState(() {
-            _image = _imageFile;
+            _image = imageFile;
           });
         },
         child: Container(
@@ -396,7 +399,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               fit: BoxFit.cover,
               image: _image != null
                   ? FileImage(_image!)
-                  : NetworkImage(
+                  : const NetworkImage(
                       "https://cdn0.iconfinder.com/data/icons/occupation-002/64/programmer-programming-occupation-avatar-512.png") as ImageProvider,
             ),
           ),
@@ -409,17 +412,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
 Widget _nameTextField() {
     return TextFormField(
       autocorrect: false,
-      style: TextStyle(color: Colors.white),
-      validator: (_input) {
-        return _input!.length != 0 ? null : "Please enter a name";
+      style: const TextStyle(color: Colors.white),
+      validator: (input) {
+        return input!.isNotEmpty ? null : "Please enter a name";
       },
-      onSaved: (_input) {
+      onSaved: (input) {
         setState(() {
-          _name = _input;
+          _name = input;
         });
       },
       cursorColor: Colors.white,
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         hintText: "Name",
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.white),
@@ -431,19 +434,19 @@ Widget _nameTextField() {
   Widget _emailTextField() {
     return TextFormField(
       autocorrect: false,
-      style: TextStyle(color: Colors.white),
-      validator: (_input) {
-        return _input!.length != 0 && _input.contains("@")
+      style: const TextStyle(color: Colors.white),
+      validator: (input) {
+        return input!.isNotEmpty && input.contains("@")
             ? null
             : "Please enter a valid email";
       },
-      onSaved: (_input) {
+      onSaved: (input) {
         setState(() {
-          _email = _input;
+          _email = input;
         });
       },
       cursorColor: Colors.white,
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         hintText: "Email",
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.white),
@@ -456,17 +459,17 @@ Widget _nameTextField() {
     return TextFormField(
       autocorrect: false,
       obscureText: true,
-      style: TextStyle(color: Colors.white),
-      validator: (_input) {
-        return _input!.length != 0 ? null : "Please enter a password";
+      style: const TextStyle(color: Colors.white),
+      validator: (input) {
+        return input!.isNotEmpty ? null : "Please enter a password";
       },
-      onSaved: (_input) {
+      onSaved: (input) {
         setState(() {
-          _password = _input;
+          _password = input;
         });
       },
       cursorColor: Colors.white,
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         hintText: "Password",
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.white),
@@ -477,32 +480,32 @@ Widget _nameTextField() {
 
   Widget _registerButton() {
     return _auth.status != AuthStatus.Authenticating
-        ? Container(
+        ? SizedBox(
             height: _deviceHeight * 0.06,
             width: _deviceWidth,
             child: MaterialButton(
               onPressed: () {
                 if (_formKey.currentState!.validate() && _image != null) {
                   _auth.registerUserWithEmailAndPassword(_email!, _password!,
-                      (String _uid) async {
-                    var _result = await CloudStorageService.instance
-                        .uploadUserImage(_uid, _image!);
-                    var _imageURL = await _result.ref.getDownloadURL();
+                      (String uid) async {
+                    var result = await CloudStorageService.instance
+                        .uploadUserImage(uid, _image!);
+                    var imageURL = await result.ref.getDownloadURL();
                     await DBService.instance
-                        .createUserInDB(_uid, _name!, _email!, _imageURL);
+                        .createUserInDB(uid, _name!, _email!, imageURL);
                   });
                 } else {
                   SnackBarService.instance.showSnackBarError("Please fill in all fields and select an image");
                 }
               },
               color: Colors.blue,
-              child: Text(
+              child: const Text(
                 "Register",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
               ),
             ),
           )
-        : Align(
+        : const Align(
             alignment: Alignment.center,
             child: CircularProgressIndicator(),
           );
@@ -513,10 +516,10 @@ Widget _nameTextField() {
       onTap: () {
         NavigationService.instance.goBack();
       },
-      child: Container(
+      child: SizedBox(
         height: _deviceHeight * 0.06,
         width: _deviceWidth,
-        child: Icon(Icons.arrow_back, size: 40),
+        child: const Icon(Icons.arrow_back, size: 40),
       ),
     );
   }

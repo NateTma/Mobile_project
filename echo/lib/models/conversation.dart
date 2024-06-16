@@ -23,28 +23,28 @@ class ConversationSnippet {
     required this.type
     });
 
-  factory ConversationSnippet.fromFirestore(DocumentSnapshot _snapshot) {
-    var _data = _snapshot.data as Map<String, dynamic>;
-    var _messageType = MessageType.Text;
-    if (_data["type"] != null) {
-      switch (_data["type"]) {
+  factory ConversationSnippet.fromFirestore(DocumentSnapshot snapshot) {
+    var data = snapshot.data as Map<String, dynamic>;
+    var messageType = MessageType.Text;
+    if (data["type"] != null) {
+      switch (data["type"]) {
         case "text":
           break;
         case "image":
-          _messageType = MessageType.Image;
+          messageType = MessageType.Image;
           break;
         default:
       }
     }
     return ConversationSnippet(
-      id: _snapshot.id,
-      conversationID: _data["conversationID"],
-      lastMessage: _data["lastMessage"] != null ? _data["lastMessage"] : "",
-      unseenCount: _data["unseenCount"],
-      timestamp: _data["timestamp"] != null ? _data["timestamp"] : Timestamp.now(),
-      name: _data["name"],
-      image: _data["image"],
-      type: _messageType,
+      id: snapshot.id,
+      conversationID: data["conversationID"],
+      lastMessage: data["lastMessage"] ?? "",
+      unseenCount: data["unseenCount"],
+      timestamp: data["timestamp"] ?? Timestamp.now(),
+      name: data["name"],
+      image: data["image"],
+      type: messageType,
     );
   }
 }
@@ -61,27 +61,27 @@ class Conversation {
     required this.ownerID, 
     required this.messages});
 
-  factory Conversation.fromFirestore(DocumentSnapshot _snapshot) {
-    var _data = _snapshot.data as Map<String, dynamic>;
-    List<Message> _messages = [];
-    if (_data["messages"] != null) {
-      _messages = (_data["messages"] as List<dynamic>).map(
-        (_m) {
+  factory Conversation.fromFirestore(DocumentSnapshot snapshot) {
+    var data = snapshot.data as Map<String, dynamic>;
+    List<Message> messages = [];
+    if (data["messages"] != null) {
+      messages = (data["messages"] as List<dynamic>).map(
+        (m) {
           return Message(
-              type: _m["type"] == "text" ? MessageType.Text : MessageType.Image,
-              content: _m["message"],
-              timestamp: _m["timestamp"],
-              senderID: _m["senderID"]);
+              type: m["type"] == "text" ? MessageType.Text : MessageType.Image,
+              content: m["message"],
+              timestamp: m["timestamp"],
+              senderID: m["senderID"]);
         },
       ).toList();
     } else {
-      _messages = [];
+      messages = [];
     }
     return Conversation(
-        id: _snapshot.id, //updated to id instead of documentID here as well
-        members: List<String>.from(_data["members"]),
-        ownerID: _data["ownerID"],
-        messages: _messages
+        id: snapshot.id, //updated to id instead of documentID here as well
+        members: List<String>.from(data["members"]),
+        ownerID: data["ownerID"],
+        messages: messages
         );
   }
 }

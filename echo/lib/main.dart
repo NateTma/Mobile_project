@@ -5,14 +5,17 @@ import "./pages/login_page.dart";
 import './pages/registration_page.dart';
 import './pages/home_page.dart';
 
-/**import 'package:firebase_analytics/firebase_analytics.dart';
- * import './services/navigation_service.dart';
- */
+/// import 'package:firebase_analytics/firebase_analytics.dart';
+/// import './services/navigation_service.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(const MyApp());
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp();
+    runApp(const MyApp());
+  } catch (e) {
+    print('Firebase initialization error: $e');
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -25,21 +28,22 @@ class MyApp extends StatelessWidget {
       title: 'Echo',
       theme: ThemeData(
         brightness: Brightness.dark,
-        primaryColor: Color.fromRGBO(42, 117, 188, 1),
+        primaryColor: const Color.fromRGBO(42, 117, 188, 1),
         colorScheme: ColorScheme.fromSwatch(
           brightness: Brightness.dark,
           primarySwatch: Colors.blue,
         ).copyWith(
-          primary: Color.fromRGBO(42, 117, 188, 1),
-          secondary: Color.fromRGBO(42, 117, 188, 1), // Used to be accentColor
-          surface: Color.fromRGBO(28, 27, 27, 1),
+          primary: const Color.fromRGBO(42, 117, 188, 1),
+          secondary:
+              const Color.fromRGBO(42, 117, 188, 1), // Used to be accentColor
+          surface: const Color.fromRGBO(28, 27, 27, 1),
         ),
       ),
       initialRoute: "login",
       routes: {
-        "login": (BuildContext _context) => LoginPage(),
-        "register": (BuildContext _context) => RegistrationPage(),
-        "home": (BuildContext _context) => HomePage(),
+        "login": (BuildContext context) => const LoginPage(),
+        "register": (BuildContext context) => const RegistrationPage(),
+        "home": (BuildContext context) => const HomePage(),
       },
     );
   }

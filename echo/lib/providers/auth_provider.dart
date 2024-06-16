@@ -39,20 +39,20 @@ class AuthProvider extends ChangeNotifier {
   }
 
   void _checkCurrentUserIsAuthenticated() async {
-    user = await _auth.currentUser!;
+    user = _auth.currentUser!;
     if (user != null) {
       notifyListeners();
       /**await*/ _autoLogin();
     }
   }
 
-  void loginUserWithEmailAndPassword(String _email, String _password) async {
+  void loginUserWithEmailAndPassword(String email, String password) async {
     status = AuthStatus.Authenticating;
     notifyListeners();
     try {
-      UserCredential _result = await _auth.signInWithEmailAndPassword(
-          email: _email, password: _password);
-      user = _result.user;
+      UserCredential result = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      user = result.user;
       status = AuthStatus.Authenticated;
       SnackBarService.instance.showSnackBarSuccess("Welcome, ${user!.email}");
       await DBService.instance.updateUserLastSeenTime(user!.uid);
@@ -65,14 +65,14 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void registerUserWithEmailAndPassword(String _email, String _password,
-      Future<void> onSuccess(String _uid)) async {
+  void registerUserWithEmailAndPassword(String email, String password,
+      Future<void> Function(String uid) onSuccess) async {
     status = AuthStatus.Authenticating;
     notifyListeners();
     try {
-      UserCredential _result = await _auth.createUserWithEmailAndPassword(
-          email: _email, password: _password);
-      user = _result.user;
+      UserCredential result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      user = result.user;
       status = AuthStatus.Authenticated;
       await onSuccess(user!.uid);
       SnackBarService.instance.showSnackBarSuccess("Welcome, ${user!.email}");
@@ -87,7 +87,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> logoutUser(Future<void> onSuccess()) async {
+  Future<void> logoutUser(Future<void> Function() onSuccess) async {
     try {
       await _auth.signOut();
       user = null;

@@ -338,6 +338,7 @@ class _ConversationPageState extends State<ConversationPage> {
     );
   }
 }*/
+library;
 
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -358,11 +359,11 @@ class ConversationPage extends StatefulWidget {
   final String _receiverImage;
   final String _receiverName;
 
-  ConversationPage(
+  const ConversationPage(
     this._conversationID,
     this._receiverID,
     this._receiverName,
-    this._receiverImage,
+    this._receiverImage, {super.key}
   );
 
   @override
@@ -388,7 +389,7 @@ class _ConversationPageState extends State<ConversationPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(31, 31, 31, 1.0),
+        backgroundColor: const Color.fromRGBO(31, 31, 31, 1.0),
         title: Text(widget._receiverName),
       ),
       body: ChangeNotifierProvider<AuthProvider>.value(
@@ -400,14 +401,14 @@ class _ConversationPageState extends State<ConversationPage> {
 
   Widget _conversationPageUI() {
     return Builder(
-      builder: (BuildContext _context) {
-        _auth = Provider.of<AuthProvider>(_context);
+      builder: (BuildContext context) {
+        _auth = Provider.of<AuthProvider>(context);
         return Stack(
           children: <Widget>[
             _messageListView(),
             Align(
               alignment: Alignment.bottomCenter,
-              child: _messageField(_context),
+              child: _messageField(context),
             ),
           ],
         );
@@ -416,40 +417,41 @@ class _ConversationPageState extends State<ConversationPage> {
   }
 
   Widget _messageListView() {
-    return Container(
+    return SizedBox(
       height: _deviceHeight * 0.75,
       width: _deviceWidth,
       child: StreamBuilder<Conversation>(
         stream: DBService.instance.getConversation(widget._conversationID),
-        builder: (BuildContext _context, _snapshot) {
+        builder: (BuildContext context, snapshot) {
           Timer(
-            Duration(milliseconds: 50),
-            () => {
-              if (_listViewController.hasClients)
-                _listViewController.jumpTo(_listViewController.position.maxScrollExtent),
+            const Duration(milliseconds: 50),
+            () {
+              if (_listViewController.hasClients) {
+                _listViewController.jumpTo(_listViewController.position.maxScrollExtent);
+              }
             },
           );
-          var _conversationData = _snapshot.data;
-          if (_conversationData != null) {
-            if (_conversationData.messages.isNotEmpty) {
+          var conversationData = snapshot.data;
+          if (conversationData != null) {
+            if (conversationData.messages.isNotEmpty) {
               return ListView.builder(
                 controller: _listViewController,
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                itemCount: _conversationData.messages.length,
-                itemBuilder: (BuildContext _context, int _index) {
-                  var _message = _conversationData.messages[_index];
-                  bool _isOwnMessage = _message.senderID == _auth.user?.uid;
-                  return _messageListViewChild(_isOwnMessage, _message);
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                itemCount: conversationData.messages.length,
+                itemBuilder: (BuildContext context, int index) {
+                  var message = conversationData.messages[index];
+                  bool isOwnMessage = message.senderID == _auth.user?.uid;
+                  return _messageListViewChild(isOwnMessage, message);
                 },
               );
             } else {
-              return Align(
+              return const Align(
                 alignment: Alignment.center,
                 child: Text("Let's start a conversation!"),
               );
             }
           } else {
-            return SpinKitWanderingCubes(
+            return const SpinKitWanderingCubes(
               color: Colors.blue,
               size: 50.0,
             );
@@ -459,28 +461,28 @@ class _ConversationPageState extends State<ConversationPage> {
     );
   }
 
-  Widget _messageListViewChild(bool _isOwnMessage, Message _message) {
-    return Padding(padding: EdgeInsets.only(bottom: 10),
+  Widget _messageListViewChild(bool isOwnMessage, Message message) {
+    return Padding(padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: _isOwnMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isOwnMessage ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: <Widget>[
-          !_isOwnMessage ? _userImageWidget() : Container(),
+          !isOwnMessage ? _userImageWidget() : Container(),
           SizedBox(width: _deviceWidth * 0.02),
-          _message.type == MessageType.Text
-              ? _textMessageBubble(_isOwnMessage, _message.content, _message.timestamp)
-              : _imageMessageBubble(_isOwnMessage, _message.content, _message.timestamp),
+          message.type == MessageType.Text
+              ? _textMessageBubble(isOwnMessage, message.content, message.timestamp)
+              : _imageMessageBubble(isOwnMessage, message.content, message.timestamp),
         ],
       ),
     );
   }
 
   Widget _userImageWidget() {
-    double _imageRadius = _deviceHeight * 0.05;
+    double imageRadius = _deviceHeight * 0.05;
     return Container(
-      height: _imageRadius,
-      width: _imageRadius,
+      height: imageRadius,
+      width: imageRadius,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(500),
         image: DecorationImage(
@@ -491,19 +493,19 @@ class _ConversationPageState extends State<ConversationPage> {
     );
   }
 
-  Widget _textMessageBubble(bool _isOwnMessage, String _message, Timestamp _timestamp) {
-    List<Color> _colorScheme = _isOwnMessage
-        ? [Colors.blue, Color.fromRGBO(42, 117, 188, 1)]
-        : [Color.fromRGBO(69, 69, 69, 1), Color.fromRGBO(43, 43, 43, 1)];
+  Widget _textMessageBubble(bool isOwnMessage, String message, Timestamp timestamp) {
+    List<Color> colorScheme = isOwnMessage
+        ? [Colors.blue, const Color.fromRGBO(42, 117, 188, 1)]
+        : [const Color.fromRGBO(69, 69, 69, 1), const Color.fromRGBO(43, 43, 43, 1)];
     return Container(
-      height: _deviceHeight * 0.08 + (_message.length / 20 * 5.0),
+      height: _deviceHeight * 0.08 + (message.length / 20 * 5.0),
       width: _deviceWidth * 0.75,
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         gradient: LinearGradient(
-          colors: _colorScheme,
-          stops: [0.30, 0.70],
+          colors: colorScheme,
+          stops: const [0.30, 0.70],
           begin: Alignment.bottomLeft,
           end: Alignment.topRight,
         ),
@@ -513,28 +515,28 @@ class _ConversationPageState extends State<ConversationPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          Text(_message),
+          Text(message),
           Text(
-            timeago.format(_timestamp.toDate()),
-            style: TextStyle(color: Colors.white70),
+            timeago.format(timestamp.toDate()),
+            style: const TextStyle(color: Colors.white70),
           ),
         ],
       ),
     );
   }
 
-  Widget _imageMessageBubble(bool _isOwnMessage, String _imageURL, Timestamp _timestamp) {
-    List<Color> _colorScheme = _isOwnMessage
-        ? [Colors.blue, Color.fromRGBO(42, 117, 188, 1)]
-        : [Color.fromRGBO(69, 69, 69, 1), Color.fromRGBO(43, 43, 43, 1)];
-    DecorationImage _image = DecorationImage(image: NetworkImage(_imageURL), fit: BoxFit.cover);
+  Widget _imageMessageBubble(bool isOwnMessage, String imageURL, Timestamp timestamp) {
+    List<Color> colorScheme = isOwnMessage
+        ? [Colors.blue, const Color.fromRGBO(42, 117, 188, 1)]
+        : [const Color.fromRGBO(69, 69, 69, 1), const Color.fromRGBO(43, 43, 43, 1)];
+    DecorationImage image = DecorationImage(image: NetworkImage(imageURL), fit: BoxFit.cover);
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         gradient: LinearGradient(
-          colors: _colorScheme,
-          stops: [0.30, 0.70],
+          colors: colorScheme,
+          stops: const [0.30, 0.70],
           begin: Alignment.bottomLeft,
           end: Alignment.topRight,
         ),
@@ -549,23 +551,23 @@ class _ConversationPageState extends State<ConversationPage> {
             width: _deviceWidth * 0.40,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
-              image: _image,
+              image: image,
             ),
           ),
           Text(
-            timeago.format(_timestamp.toDate()),
-            style: TextStyle(color: Colors.white70),
+            timeago.format(timestamp.toDate()),
+            style: const TextStyle(color: Colors.white70),
           ),
         ],
       ),
     );
   }
 
-  Widget _messageField(BuildContext _context) {
+  Widget _messageField(BuildContext context) {
     return Container(
       height: _deviceHeight * 0.08,
       decoration: BoxDecoration(
-        color: Color.fromRGBO(43, 43, 43, 1),
+        color: const Color.fromRGBO(43, 43, 43, 1),
         borderRadius: BorderRadius.circular(100),
       ),
       margin: EdgeInsets.symmetric(horizontal: _deviceWidth * 0.04, vertical: _deviceHeight * 0.03),
@@ -577,7 +579,7 @@ class _ConversationPageState extends State<ConversationPage> {
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             _messageTextField(),
-            _sendMessageButton(_context),
+            _sendMessageButton(context),
             _imageMessageButton(),
           ],
         ),
@@ -589,22 +591,22 @@ class _ConversationPageState extends State<ConversationPage> {
     return SizedBox(
       width: _deviceWidth * 0.55,
       child: TextFormField(
-        validator: (_input) {
-          if (_input == null || _input.isEmpty) {
+        validator: (input) {
+          if (input == null || input.isEmpty) {
             return "Please enter a message";
           }
           return null;
         },
-        onChanged: (_input) {
+        onChanged: (input) {
           _formKey.currentState?.save();
         },
-        onSaved: (_input) {
+        onSaved: (input) {
           setState(() {
-            _messageText = _input ?? '';
+            _messageText = input ?? '';
           });
         },
         cursorColor: Colors.white,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           border: InputBorder.none,
           hintText: "Type a message",
         ),
@@ -613,12 +615,12 @@ class _ConversationPageState extends State<ConversationPage> {
     );
   }
 
-  Widget _sendMessageButton(BuildContext _context) {
-    return Container(
+  Widget _sendMessageButton(BuildContext context) {
+    return SizedBox(
       height: _deviceHeight * 0.05,
       width: _deviceHeight * 0.05,
       child: IconButton(
-        icon: Icon(
+        icon: const Icon(
           Icons.send,
           color: Colors.white,
         ),
@@ -634,7 +636,7 @@ class _ConversationPageState extends State<ConversationPage> {
               ),
             );
             _formKey.currentState?.reset();
-            FocusScope.of(_context).unfocus();
+            FocusScope.of(context).unfocus();
           }
         },
       ),
@@ -642,22 +644,22 @@ class _ConversationPageState extends State<ConversationPage> {
   }
 
   Widget _imageMessageButton() {
-    return Container(
+    return SizedBox(
       height: _deviceHeight * 0.05,
       width: _deviceHeight * 0.05,
       child: FloatingActionButton(
         onPressed: () async {
-          var _image = await MediaService.instance.getImageFromLibrary();
-          if (_image != null) {
-            var _result = await CloudStorageService.instance.uploadMediaMessage(
+          var image = await MediaService.instance.getImageFromLibrary();
+          if (image != null) {
+            var result = await CloudStorageService.instance.uploadMediaMessage(
               _auth.user!.uid,
-              _image,
+              image,
             );
-            var _imageURL = await _result.ref.getDownloadURL();
+            var imageURL = await result.ref.getDownloadURL();
             await DBService.instance.sendMessage(
               widget._conversationID,
               Message(
-                content: _imageURL,
+                content: imageURL,
                 senderID: _auth.user!.uid,
                 timestamp: Timestamp.now(),
                 type: MessageType.Image,
@@ -665,7 +667,7 @@ class _ConversationPageState extends State<ConversationPage> {
             );
           }
         },
-        child: Icon(Icons.camera_enhance),
+        child: const Icon(Icons.camera_enhance),
       ),
     );
   }

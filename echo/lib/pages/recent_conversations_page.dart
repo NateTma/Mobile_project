@@ -1,29 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:provider/provider.dart';
-
 import '../providers/auth_provider.dart';
-
 import '../services/db_service.dart';
 import '../services/navigation_service.dart';
-
 import '../models/conversation.dart';
 import '../models/message.dart';
-
 import '../pages/conversation_page.dart';
 
 class RecentConversationsPage extends StatelessWidget {
   final double _height;
   final double _width;
 
-  RecentConversationsPage(this._height, this._width);
+  const RecentConversationsPage(this._height, this._width, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: _height,
       width: _width,
       child: ChangeNotifierProvider<AuthProvider>.value(
@@ -35,41 +30,41 @@ class RecentConversationsPage extends StatelessWidget {
 
   Widget _conversationsListViewWidget() {
     return Builder(
-      builder: (BuildContext _context) {
-        var _auth = Provider.of<AuthProvider>(_context);
-        return Container(
+      builder: (BuildContext context) {
+        var auth = Provider.of<AuthProvider>(context);
+        return SizedBox(
           height: _height,
           width: _width,
           child: StreamBuilder<List<ConversationSnippet>>(
-            stream: _auth.user != null? DBService.instance.getUserConversations(_auth.user!.uid): Stream.empty(),
-            builder: (_context, _snashot) {
-              var _data = _snashot.data;
-              if (_data != null) {
-                _data.removeWhere((_c) {
-                  return _c.timestamp == null;
+            stream: auth.user != null? DBService.instance.getUserConversations(auth.user!.uid): const Stream.empty(),
+            builder: (context, snashot) {
+              var data = snashot.data;
+              if (data != null) {
+                data.removeWhere((c) {
+                  return c.timestamp == null;
                 });
-                return _data.length != 0
+                return data.isNotEmpty
                     ? ListView.builder(
-                        itemCount: _data.length,
-                        itemBuilder: (_context, _index) {
+                        itemCount: data.length,
+                        itemBuilder: (context, index) {
                           return ListTile(
                             onTap: () {
                               NavigationService.instance.navigateToRoute(
                                 MaterialPageRoute(
-                                  builder: (BuildContext _context) {
+                                  builder: (BuildContext context) {
                                     return ConversationPage(
-                                        _data[_index].conversationID,
-                                        _data[_index].id,
-                                        _data[_index].name,
-                                        _data[_index].image);
+                                        data[index].conversationID,
+                                        data[index].id,
+                                        data[index].name,
+                                        data[index].image);
                                   },
                                 ),
                               );
                             },
-                            title: Text(_data[_index].name),
+                            title: Text(data[index].name),
                             subtitle: Text(
-                                _data[_index].type == MessageType.Text
-                                    ? _data[_index].lastMessage
+                                data[index].type == MessageType.Text
+                                    ? data[index].lastMessage
                                     : "Attachment: Image"),
                             leading: Container(
                               width: 50,
@@ -78,16 +73,16 @@ class RecentConversationsPage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(100),
                                 image: DecorationImage(
                                   fit: BoxFit.cover,
-                                  image: NetworkImage(_data[_index].image),
+                                  image: NetworkImage(data[index].image),
                                 ),
                               ),
                             ),
                             trailing: _listTileTrailingWidgets(
-                                _data[_index].timestamp),
+                                data[index].timestamp),
                           );
                         },
                       )
-                    : Align(
+                    : const Align(
                         child: Text(
                           "No Conversations Yet!",
                           style:
@@ -95,7 +90,7 @@ class RecentConversationsPage extends StatelessWidget {
                         ),
                       );
               } else {
-                return SpinKitWanderingCubes(
+                return const SpinKitWanderingCubes(
                   color: Colors.blue,
                   size: 50.0,
                 );
@@ -107,19 +102,19 @@ class RecentConversationsPage extends StatelessWidget {
     );
   }
 
-  Widget _listTileTrailingWidgets(Timestamp _lastMessageTimestamp) {
+  Widget _listTileTrailingWidgets(Timestamp lastMessageTimestamp) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       mainAxisSize: MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: <Widget>[
-        Text(
+        const Text(
           "Last Message",
           style: TextStyle(fontSize: 15),
         ),
         Text(
-          timeago.format(_lastMessageTimestamp.toDate()),
-          style: TextStyle(fontSize: 15),
+          timeago.format(lastMessageTimestamp.toDate()),
+          style: const TextStyle(fontSize: 15),
         ),
       ],
     );
